@@ -1,5 +1,5 @@
 {
-  "name": "tournament-v2",
+  "name": "tournement-v2",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,17 +9,55 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@tailwindcss/postcss": "^4.1.6",
+    "@tanstack/react-query": "^5.80.10",
+    "better-auth": "^1.2.8",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
+    "drizzle-kit": "^0.31.1",
+    "drizzle-orm": "^0.43.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.5",
+    "framer-motion": "^12.18.1",
+    "lucide-react": "^0.511.0",
+    "next": "15.3.2",
+    "next-themes": "^0.4.6",
+    "pg": "^8.16.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
     "react": "^19.0.0",
+    "react-day-picker": "^9.7.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.4"
+    "react-hook-form": "^7.56.4",
+    "react-toastify": "^11.0.5",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.6",
+    "uuid": "^11.1.0",
+    "zod": "^3.25.36",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/pg": "^8.15.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "15.3.2",
+    "tw-animate-css": "^1.3.4",
+    "typescript": "^5"
   }
 }
