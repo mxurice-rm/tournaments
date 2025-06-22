@@ -9,6 +9,7 @@ import { database } from '@/database'
 import { validateEntityExists, validateParams } from '@/lib/api/validator'
 import { validate } from 'uuid'
 import { getTournamentByID } from '@/lib/database/tournament'
+import { updatedDiff } from 'deep-object-diff'
 
 const UpdateTournamentSchema = TournamentSchema.partial().extend({
   date: z.string().optional()
@@ -40,7 +41,7 @@ export async function patchTournamentHandler(
     return respondWithError('Invalid tournament updates provided', 400)
   }
 
-  const fieldsToUpdate = buildUpdateFields(updates, tournament!)
+  const fieldsToUpdate = getChangedFields(tournament!, updates)
 
   if (Object.keys(fieldsToUpdate).length === 0) {
     return respondWithError('No tournament updates detected', 400)
@@ -62,31 +63,17 @@ export async function patchTournamentHandler(
   })
 }
 
-function buildUpdateFields(
-  updates: UpdateTournamentType,
-  tournament: Tournament
-): Partial<UpdateTournamentType> {
-  return Object.keys(updates).reduce((result, key) => {
-    const typedKey = key as keyof UpdateTournamentType
-    const newValue = updates[typedKey]
+function getChangedFields(tournament: Tournament, updates: UpdateTournamentType): Partial<UpdateTournamentType> {
+  const changes = updatedDiff(tournament, updates) as Partial<UpdateTournamentType>
 
-    if (newValue !== undefined) {
-      if (typedKey === 'date') {
-        const existingDate = new Date(tournament[typedKey]!).toISOString()
-        const newDate = new Date(newValue as string).toISOString()
+  if (updates.date && changes.date) {
+    const existingDateISO = tournament.date.toISOString()
+    const newDateISO = new Date(updates.date).toISOString()
 
-        if (existingDate !== newDate) {
-          result[typedKey] = newValue
-        }
-      } else if (typedKey === 'type') {
-        if (newValue !== tournament[typedKey]) {
-          result[typedKey] = newValue as 'table' | 'bracket'
-        }
-      } else if (newValue !== tournament[typedKey]) {
-        result[typedKey] = newValue
-      }
+    if (existingDateISO === newDateISO) {
+      delete changes.date
     }
+  }
 
-    return result
-  }, {} as Partial<UpdateTournamentType>)
+  return changes
 }

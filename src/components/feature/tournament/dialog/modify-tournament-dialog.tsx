@@ -28,7 +28,7 @@ const ModifyTournamentDialog = ({ tournament }: { tournament: Tournament }) => {
       open={isOpen}
       setOpen={setIsOpen}
       title="Turnier bearbeiten"
-      description="            Hier können Änderungen über die allgemeinen Informationen des
+      description="Hier können Änderungen über die allgemeinen Informationen des
             Turniers vorgenommen werden"
       triggerButton={
         <Button size="sm">

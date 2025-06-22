@@ -15,7 +15,7 @@ const TournamentTeamMemberList = ({
           <p>Keine Mitglieder vorhanden</p>
         </div>
       ) : (
-        <div>
+        <div className="flex flex-col gap-2.5">
           {tournamentTeam.members.map((member) => (
             <div
               key={member.id}

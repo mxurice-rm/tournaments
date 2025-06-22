@@ -24,6 +24,17 @@ export const createTournamentTeam = async (
   })
 }
 
+export const updateTournamentTeam = async (
+  teamId: string,
+  values: z.infer<typeof TournamentTeamSchema>
+): Promise<void> => {
+  await fetchJson(`/api/team/${teamId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(values)
+  })
+}
+
 export const createTournament = async (
   values: z.infer<typeof TournamentSchema>
 ): Promise<void> => {
@@ -38,6 +49,15 @@ export const deleteTournament = async (
   tournamentId: string,
 ): Promise<void> => {
   await fetchJson(`/api/tournament/${tournamentId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+export const deleteTournamentTeam = async (
+  teamId: string,
+): Promise<void> => {
+  await fetchJson(`/api/team/${teamId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
   })
