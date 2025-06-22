@@ -5,21 +5,26 @@ import { TournamentTeamSchema } from '@/lib/schemas'
 import { getTournamentTeam } from '@/lib/database/tournament-team/queries'
 import { database } from '@/database'
 import { teamMembers, teams } from '@/database/schema'
-import { validateTournamentExists, validateTournamentId } from '@/lib/api/utilts'
+import { validateEntityExists, validateParams } from '@/lib/api/validator'
+import { validate } from 'uuid'
+import { getTournamentByID } from '@/lib/database/tournament'
 
 export async function postTournamentTeamHandler(
   request: NextRequest,
   context?: APIContext
 ): Promise<NextResponse> {
-  const { tournamentId, error: idError } = await validateTournamentId(
-    request,
-    context
-  )
-  if (idError) return idError
+  const {
+    params: { tournamentId },
+    error: paramError
+  } = await validateParams(request, { tournamentId: validate }, context)
+  if (paramError) return paramError
 
   try {
-    const { error: tournamentError } =
-      await validateTournamentExists(tournamentId)
+    const { error: tournamentError } = await validateEntityExists(
+      tournamentId,
+      getTournamentByID,
+      'Tournament'
+    )
     if (tournamentError) return tournamentError
 
     let teamData

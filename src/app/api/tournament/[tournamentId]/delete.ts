@@ -1,23 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { APIContext } from '@/types'
-import { validateTournamentExists, validateTournamentId } from '@/lib/api/utilts'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { database } from '@/database'
 import { tournaments } from '@/database/schema'
 import { eq } from 'drizzle-orm'
+import { validateEntityExists, validateParams } from '@/lib/api/validator'
+import { validate } from 'uuid'
+import { getTournamentByID } from '@/lib/database/tournament'
 
 export async function deleteTournamentHandler(
   request: NextRequest,
   context?: APIContext
 ): Promise<NextResponse> {
-  const { tournamentId, error: idError } = await validateTournamentId(
-    request,
-    context
-  )
-  if (idError) return idError
+  const {
+    params: { tournamentId },
+    error: paramError
+  } = await validateParams(request, { tournamentId: validate }, context)
+  if (paramError) return paramError
 
-  const { error: tournamentError } =
-    await validateTournamentExists(tournamentId)
+  const { error: tournamentError } = await validateEntityExists(
+    tournamentId,
+    getTournamentByID,
+    'Tournament'
+  )
   if (tournamentError) return tournamentError
 
   try {

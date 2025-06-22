@@ -6,7 +6,9 @@ import { TournamentSchema } from '@/lib/schemas'
 import { tournaments } from '@/database/schema'
 import { eq } from 'drizzle-orm'
 import { database } from '@/database'
-import { validateTournamentExists, validateTournamentId } from '@/lib/api/utilts'
+import { validateEntityExists, validateParams } from '@/lib/api/validator'
+import { validate } from 'uuid'
+import { getTournamentByID } from '@/lib/database/tournament'
 
 const UpdateTournamentSchema = TournamentSchema.partial().extend({
   date: z.string().optional()
@@ -17,14 +19,17 @@ export async function patchTournamentHandler(
   request: NextRequest,
   context?: APIContext
 ): Promise<NextResponse> {
-  const { tournamentId, error: idError } = await validateTournamentId(
-    request,
-    context
-  )
-  if (idError) return idError
+  const {
+    params: { tournamentId },
+    error: paramError
+  } = await validateParams(request, { tournamentId: validate }, context)
+  if (paramError) return paramError
 
-  const { tournament, error: tournamentError } =
-    await validateTournamentExists(tournamentId)
+  const { entity: tournament, error: tournamentError } = await validateEntityExists(
+    tournamentId,
+    getTournamentByID,
+    'Tournament'
+  )
   if (tournamentError) return tournamentError
 
   let updates: UpdateTournamentType

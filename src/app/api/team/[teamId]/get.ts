@@ -3,29 +3,25 @@ import { APIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { validateEntityExists, validateParams } from '@/lib/api/validator'
 import { validate } from 'uuid'
-import { getTournamentByID } from '@/lib/database/tournament'
+import { getTournamentTeamByID } from '@/lib/database/tournament-team/queries'
 
-export async function getTournamentHandler(
+export async function getTournamentTeamHandler(
   request: NextRequest,
   context?: APIContext
 ): Promise<NextResponse> {
   const {
-    params: { tournamentId },
+    params: { teamId },
     error: paramError
-  } = await validateParams(request, { tournamentId: validate }, context)
+  } = await validateParams(request, { teamId: validate }, context)
   if (paramError) return paramError
-
   try {
-    const { entity: tournament, error: tournamentError } = await validateEntityExists(
-      tournamentId,
-      getTournamentByID,
-      'Tournament'
-    )
+    const { entity: tournamentTeam, error: tournamentError } =
+      await validateEntityExists(teamId, getTournamentTeamByID, 'Tournament-Team')
     if (tournamentError) return tournamentError
 
-    return respondWithSuccess({ tournament })
+    return respondWithSuccess({ tournamentTeam })
   } catch (error) {
-    console.error('Error fetching tournament data:', error)
+    console.error('Error fetching tournament team data:', error)
     return respondWithError('An error occurred', 500)
   }
 }

@@ -51,7 +51,7 @@ const TournamentTeamCard = ({ team }: { team: TournamentTeam }) => {
           </div>
         )}
       </div>
-      <Link href={`/dashboard/tournament/${team.tournamentId}/team/${team.id}`}>
+      <Link href={`/dashboard/${team.tournamentId}/${team.id}`}>
         <Button variant="outline" className="w-full">
           Team verwalten
           <ArrowRight />
