@@ -31,7 +31,7 @@ const ModifyTournamentDialog = ({ tournament }: { tournament: Tournament }) => {
       description="Hier können Änderungen über die allgemeinen Informationen des
             Turniers vorgenommen werden"
       triggerButton={
-        <Button size="sm">
+        <Button size="sm" className="flex-1">
           <Pencil />
           Änderungen vornehmen
         </Button>

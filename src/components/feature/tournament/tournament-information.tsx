@@ -13,7 +13,7 @@ const TournamentInformation = ({ tournament }: { tournament: Tournament }) => {
     <PageSection
       title="Turnierinformationen"
       headerAdditional={
-        <div className="flex gap-3">
+        <div className="flex gap-3 justify-between">
           <DeleteTournamentDialog tournament={tournament} />
           <ModifyTournamentDialog tournament={tournament} />
         </div>

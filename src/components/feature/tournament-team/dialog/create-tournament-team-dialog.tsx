@@ -33,7 +33,7 @@ const CreateTournamentTeamDialog = ({ tournament }: { tournament: Tournament }) 
       title="Neues Team erstellen"
       description="Erstelle hier ein neues Team für das ausgewählte Turnier."
       triggerButton={
-        <Button size="sm">
+        <Button size="sm" className={tournament.teams.length > 0 ? 'flex-1' : ''}>
           <Plus />
           Neues Team
         </Button>

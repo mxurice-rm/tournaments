@@ -37,7 +37,7 @@ const ModifyTournamentTeamDialog = ({
       title="Team bearbeiten"
       description="Hier können allgemeine Änderungen an dem Team vorgenommen werden."
       triggerButton={
-        <Button size="sm">
+        <Button size="sm" className="flex-1">
           <Pencil />
           Änderungen vornehmen
         </Button>

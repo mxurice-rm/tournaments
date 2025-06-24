@@ -13,7 +13,7 @@ const TournamentTeamList = ({ tournament }: { tournament: Tournament }) => {
       headerAdditional={
         <div className="flex gap-3">
           {tournament.teams.length !== 0 && (<CreateTournamentTeamDialog tournament={tournament} />)}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/30 rounded-md">
+          <div className="flex flex-1 items-center justify-center gap-2 px-3 py-1.5 bg-secondary/30 rounded-md">
             <Users className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-gray-300">
               {tournament.teams.length} Teams

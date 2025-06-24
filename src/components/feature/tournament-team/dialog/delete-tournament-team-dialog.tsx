@@ -42,7 +42,7 @@ const DeleteTournamentTeamDialog = ({
       title="Team löschen"
       description="Bist du sicher, dass du dieses Team löschen möchtest? Dieser Vorgang kann nicht rückgänig gemacht werden."
       triggerButton={
-        <Button size="sm" variant="destructive">
+        <Button size="sm" variant="destructive" className="flex-1">
           <Trash />
           Team löschen
         </Button>

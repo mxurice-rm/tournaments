@@ -30,7 +30,7 @@ const DeleteTournamentDialog = ({ tournament }: { tournament: Tournament }) => {
       title="Turnier löschen"
       description="Bist du sicher, dass du dieses Turnier löschen möchtest? Dieser Vorgang kann nicht rückgänig gemacht werden."
       triggerButton={
-        <Button size="sm" variant="destructive">
+        <Button size="sm" variant="destructive" className="flex-1">
           <Trash />
           Turnier löschen
         </Button>
