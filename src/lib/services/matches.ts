@@ -3,10 +3,47 @@ import {
   Tournament,
   TournamentMatch,
   TournamentRound,
-  TournamentTeam
+  TournamentTeam,
 } from '@/types'
 import { database } from '@/database'
 import { matches } from '@/database/schema'
+
+const buildMatch = (
+  tournamentId: string,
+  roundNumber: number,
+  matchNumber: number,
+  matchInRound: number,
+  team1: TournamentTeam,
+  team2: TournamentTeam,
+): TournamentMatch => ({
+  id: crypto.randomUUID(),
+  tournamentId,
+  homeTeamId: team1.id,
+  awayTeamId: team2.id,
+  homeScore: null,
+  awayScore: null,
+  phase: 'group',
+  status: 'scheduled',
+  matchNumber,
+  roundNumber,
+  matchInRound,
+  tournamentGroup: null,
+  homeTeam: team1,
+  awayTeam: team2,
+})
+
+const registerTeamsForRound = (
+  team1: TournamentTeam,
+  team2: TournamentTeam,
+  roundNumber: number,
+  usedTeams: Set<string>,
+  teamLastRound: Map<string, number>,
+) => {
+  usedTeams.add(team1.id)
+  usedTeams.add(team2.id)
+  teamLastRound.set(team1.id, roundNumber)
+  teamLastRound.set(team2.id, roundNumber)
+}
 
 export const createMatchPlan = (
   tournament: Tournament,
@@ -61,66 +98,45 @@ export const createMatchPlan = (
       return gamesA - gamesB;
     });
 
-    for (let i = 0; i < remainingMatches.length && currentRoundMatches.length < maxParallelGames; i++) {
+    for (
+      let i = 0;
+      i < remainingMatches.length && currentRoundMatches.length < maxParallelGames;
+      i++
+    ) {
       const [team1, team2] = remainingMatches[i];
 
       if (!usedTeamsThisRound.has(team1.id) && !usedTeamsThisRound.has(team2.id)) {
-        const match: TournamentMatch = {
-          id: crypto.randomUUID(),
-          tournamentId: tournament.id,
-          homeTeamId: team1.id,
-          awayTeamId: team2.id,
-          homeScore: null,
-          awayScore: null,
-          phase: "group",
-          status: "scheduled",
-          matchNumber: globalMatchNumber,
-          roundNumber: currentRoundNumber,
-          matchInRound: currentRoundMatches.length + 1,
-          tournamentGroup: null,
-          homeTeam: team1,
-          awayTeam: team2
-        };
+        const match = buildMatch(
+          tournament.id,
+          currentRoundNumber,
+          globalMatchNumber,
+          currentRoundMatches.length + 1,
+          team1,
+          team2,
+        );
 
         currentRoundMatches.push(match);
-        usedTeamsThisRound.add(team1.id);
-        usedTeamsThisRound.add(team2.id);
-
-        teamLastRound.set(team1.id, currentRoundNumber);
-        teamLastRound.set(team2.id, currentRoundNumber);
-
+        registerTeamsForRound(team1, team2, currentRoundNumber, usedTeamsThisRound, teamLastRound);
         remainingMatches.splice(i, 1);
         globalMatchNumber++;
         i--;
       }
     }
 
-    if (currentRoundMatches.length === 0) {
-      if (remainingMatches.length > 0) {
-        const [team1, team2] = remainingMatches[0];
-        const match: TournamentMatch = {
-          id: crypto.randomUUID(),
-          tournamentId: tournament.id,
-          homeTeamId: team1.id,
-          awayTeamId: team2.id,
-          homeScore: null,
-          awayScore: null,
-          phase: "group",
-          status: "scheduled",
-          matchNumber: globalMatchNumber,
-          roundNumber: currentRoundNumber,
-          matchInRound: 1,
-          tournamentGroup: null,
-          homeTeam: team1,
-          awayTeam: team2
-        };
-
-        currentRoundMatches.push(match);
-        teamLastRound.set(team1.id, currentRoundNumber);
-        teamLastRound.set(team2.id, currentRoundNumber);
-        remainingMatches.splice(0, 1);
-        globalMatchNumber++;
-      }
+    if (currentRoundMatches.length === 0 && remainingMatches.length > 0) {
+      const [team1, team2] = remainingMatches[0];
+      const match = buildMatch(
+        tournament.id,
+        currentRoundNumber,
+        globalMatchNumber,
+        1,
+        team1,
+        team2,
+      );
+      currentRoundMatches.push(match);
+      registerTeamsForRound(team1, team2, currentRoundNumber, usedTeamsThisRound, teamLastRound);
+      remainingMatches.splice(0, 1);
+      globalMatchNumber++;
     }
 
     if (currentRoundMatches.length > 0) {
