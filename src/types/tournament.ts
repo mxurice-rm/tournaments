@@ -21,3 +21,30 @@ export type Tournament = {
   type: 'table' | 'bracket'
   teams: TournamentTeam[]
 }
+
+export type TournamentMatch = {
+  id: string
+  tournamentId: string
+  homeTeamId: string
+  awayTeamId: string
+  homeScore: number | null
+  awayScore: number | null
+  phase: 'group' | 'semifinal' | 'final'
+  status: 'scheduled' | 'in_progress' | 'completed'
+  matchNumber: number
+  roundNumber: number
+  matchInRound: number
+  tournamentGroup?: string | null
+}
+
+export type TournamentRound = {
+  roundNumber: number
+  matches: TournamentMatch[]
+  isComplete: boolean
+}
+
+export type MatchPlan = {
+  rounds: TournamentRound[]
+  totalMatches: number
+  totalRounds: number
+}

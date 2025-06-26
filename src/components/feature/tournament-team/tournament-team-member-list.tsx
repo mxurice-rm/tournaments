@@ -19,7 +19,7 @@ const TournamentTeamMemberList = ({
           {tournamentTeam.members.map((member) => (
             <div
               key={member.id}
-              className="flex justify-between items-center p-3 px-5 rounded-md border border-white/10 bg-gradient-to-br from-secondary/50 to-secondary/30 backdrop-blur-sm"
+              className="flex justify-between items-center p-3 px-5 rounded-md border bg-gradient-to-r from-secondary to-secondary/50 backdrop-blur-sm"
             >
               <div className="flex gap-5 items-center">
                 <div className="p-2 bg-primary/20 rounded-full">

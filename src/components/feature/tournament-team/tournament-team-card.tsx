@@ -3,11 +3,11 @@ import { ArrowRight, UserCheck, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import Link from 'next/link'
-import BaseCard from '@/components/common/base-card'
+import { Card } from '@/components/ui/card'
 
 const TournamentTeamCard = ({ team }: { team: TournamentTeam }) => {
   return (
-    <BaseCard className="gap-3 p-4">
+    <Card className="gap-3 p-4">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-md bg-primary/20">
@@ -35,14 +35,14 @@ const TournamentTeamCard = ({ team }: { team: TournamentTeam }) => {
 
         {team.members.length !== 0 && (
           <div className="space-y-1">
-            <p className="text-xs text-secondary-foreground/40 uppercase tracking-wider">
+            <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider">
               Mitglieder:
             </p>
             <div className="flex flex-wrap gap-1">
               {team.members.map((member, index) => (
                 <span
                   key={index}
-                  className="px-2 py-1 text-xs bg-primary/5 text-gray-300 rounded-md"
+                  className="px-2 py-1 text-xs bg-primary/5 text-secondary-foreground/60 rounded-md"
                 >
                   {member.name}
                 </span>
@@ -57,7 +57,7 @@ const TournamentTeamCard = ({ team }: { team: TournamentTeam }) => {
           <ArrowRight />
         </Button>
       </Link>
-    </BaseCard>
+    </Card>
   )
 }
 

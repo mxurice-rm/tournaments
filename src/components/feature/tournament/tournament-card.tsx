@@ -10,9 +10,9 @@ import {
 import React from 'react'
 import { Tournament } from '@/types'
 import { Button } from '@/components/ui/button'
-import BaseCard from '@/components/common/base-card'
 import { tournamentTypeMapping } from '@/lib/utils'
 import Link from 'next/link'
+import { Card } from '@/components/ui/card'
 
 const TournamentDetail = ({
   icon,
@@ -36,7 +36,7 @@ const TournamentDetail = ({
 
 const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
   return (
-    <BaseCard>
+    <Card>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-md bg-primary/20">
@@ -47,9 +47,9 @@ const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
           </h3>
         </div>
 
-        <div className="flex items-center gap-2 px-2 py-1 bg-secondary/50 rounded-md">
+        <div className="flex items-center gap-2 px-2 py-1 bg-secondary-foreground/5 rounded-md">
           <Users className="h-3 w-3 text-primary" />
-          <span className="text-xs font-medium text-gray-300">
+          <span className="text-xs font-medium text-secondary-foreground">
             {tournament.teams?.length || 0} Teams
           </span>
         </div>
@@ -74,7 +74,7 @@ const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
           <ArrowRight />
         </Button>
       </Link>
-    </BaseCard>
+    </Card>
   )
 }
 

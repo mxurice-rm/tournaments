@@ -1,18 +1,19 @@
 import React from 'react'
+import { Card } from '@/components/ui/card'
 
 const InfoCard = ({
-                    title,
-                    info,
-                    icon
-                  }: {
+  title,
+  info,
+  icon
+}: {
   title: string
   info: string | Date | React.ReactNode
   icon: React.ReactElement<{ className?: string }>
 }) => {
   return (
-    <div className="flex flex-col gap-3 p-4 rounded-md border border-white/10 bg-gradient-to-br from-secondary/50 to-secondary/30 backdrop-blur-sm">
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-md bg-secondary/50">
+    <Card className="!p-4 !gap-3">
+      <div className="flex items-center">
+        <div className="pl-0 p-2 rounded-md bg-secondary/50">
           {React.isValidElement(icon) &&
             React.cloneElement(icon, {
               className: 'h-5 w-5 text-primary'
@@ -29,7 +30,7 @@ const InfoCard = ({
       ) : (
         info
       )}
-    </div>
+    </Card>
   )
 }
 

@@ -4,10 +4,7 @@ import Footer from '@/components/layout/footer'
 const Page = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="absolute inset-0 opacity-5">
-        <div className="w-full h-full bg-gradient-to-br from-green-600/10 to-slate-900/10"></div>
-      </div>
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl"></div>
 
       {/* PAGE CONTAINER */}
       <div className="max-w-7xl container mx-auto flex-grow flex flex-col">

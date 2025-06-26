@@ -25,9 +25,7 @@ const buildMatch = (
   matchNumber,
   roundNumber,
   matchInRound,
-  tournamentGroup: null,
-  homeTeam: team1,
-  awayTeam: team2,
+  tournamentGroup: null
 })
 
 const registerTeamsForRound = (
@@ -43,7 +41,7 @@ const registerTeamsForRound = (
   teamLastRound.set(team2.id, roundNumber)
 }
 
-export const createMatchPlan = (
+export const createTableMatchPlan = (
   tournament: Tournament,
   maxParallelGames = 2
 ): MatchPlan => {

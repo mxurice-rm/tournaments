@@ -1,7 +1,7 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescription, DialogHeader,
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
@@ -28,8 +28,10 @@ const BaseDialog = ({
         {triggerButton}
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>{title}</DialogTitle>
-        {description && <DialogDescription>{description}</DialogDescription>}
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description && <DialogDescription>{description}</DialogDescription>}
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>
