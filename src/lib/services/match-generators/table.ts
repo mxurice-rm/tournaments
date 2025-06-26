@@ -13,6 +13,7 @@ const buildMatch = (
   matchInRound: number,
   team1: TournamentTeam,
   team2: TournamentTeam,
+  tournamentGroup: string | null = null
 ): TournamentMatch => ({
   id: crypto.randomUUID(),
   tournamentId,
@@ -25,7 +26,7 @@ const buildMatch = (
   matchNumber,
   roundNumber,
   matchInRound,
-  tournamentGroup: null
+  tournamentGroup
 })
 
 const registerTeamsForRound = (
@@ -43,7 +44,8 @@ const registerTeamsForRound = (
 
 export const createTableMatchPlan = (
   tournament: Tournament,
-  maxParallelGames = 2
+  maxParallelGames = 2,
+  tournamentGroup: string | null = null
 ): MatchPlan => {
   if (tournament.teams.length < 2) {
     return { rounds: [], totalMatches: 0, totalRounds: 0 };
@@ -109,6 +111,7 @@ export const createTableMatchPlan = (
           currentRoundMatches.length + 1,
           team1,
           team2,
+          tournamentGroup
         );
 
         currentRoundMatches.push(match);
@@ -128,6 +131,7 @@ export const createTableMatchPlan = (
         1,
         team1,
         team2,
+        tournamentGroup
       );
       currentRoundMatches.push(match);
       registerTeamsForRound(team1, team2, currentRoundNumber, usedTeamsThisRound, teamLastRound);
