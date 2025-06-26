@@ -2,20 +2,19 @@ import {
   MatchPlan,
   Tournament,
   TournamentMatch,
-  TournamentRound,
+  TournamentRound
 } from '@/types'
 import { createTableMatchPlan } from './table'
 
-// Generate a bracket style tournament.
-// Teams are split into two groups and a table style match plan is
-// created for each group. The rounds of both groups are then
-// interleaved so that teams get as much pause as possible between
-// matches.
 export const createBracketMatchPlan = (
   tournament: Tournament,
   maxParallelGames = 2
 ): MatchPlan => {
   if (tournament.teams.length < 8) {
+    return { rounds: [], totalMatches: 0, totalRounds: 0 }
+  }
+
+  if (tournament.teams.length % 2 !== 0) {
     return { rounds: [], totalMatches: 0, totalRounds: 0 }
   }
 
@@ -40,36 +39,66 @@ export const createBracketMatchPlan = (
 
   const rounds: TournamentRound[] = []
   let matchNumber = 1
-  const maxRounds = Math.max(groupAPlan.rounds.length, groupBPlan.rounds.length)
 
-  for (let i = 0; i < maxRounds; i++) {
+  const remainingGroupAMatches: TournamentMatch[] = []
+  const remainingGroupBMatches: TournamentMatch[] = []
+
+  groupAPlan.rounds.forEach((round) => {
+    remainingGroupAMatches.push(...round.matches)
+  })
+  groupBPlan.rounds.forEach((round) => {
+    remainingGroupBMatches.push(...round.matches)
+  })
+
+  while (
+    remainingGroupAMatches.length > 0 ||
+    remainingGroupBMatches.length > 0
+  ) {
     const roundMatches: TournamentMatch[] = []
+    const currentRoundNumber = rounds.length + 1
 
-    if (i < groupAPlan.rounds.length) {
-      groupAPlan.rounds[i].matches.forEach(m => {
+    let groupAIndex = 0
+    let groupBIndex = 0
+
+    while (
+      roundMatches.length < maxParallelGames &&
+      (groupAIndex < remainingGroupAMatches.length ||
+        groupBIndex < remainingGroupBMatches.length)
+    ) {
+      const shouldTakeFromA =
+        groupAIndex < remainingGroupAMatches.length &&
+        (groupBIndex >= remainingGroupBMatches.length ||
+          roundMatches.length % 2 === 0)
+
+      if (shouldTakeFromA) {
+        const match = remainingGroupAMatches[groupAIndex]
         roundMatches.push({
-          ...m,
+          ...match,
           matchNumber: matchNumber++,
-          roundNumber: rounds.length + 1,
+          roundNumber: currentRoundNumber,
+          matchInRound: roundMatches.length + 1
         })
-      })
+        groupAIndex++
+      } else if (groupBIndex < remainingGroupBMatches.length) {
+        const match = remainingGroupBMatches[groupBIndex]
+        roundMatches.push({
+          ...match,
+          matchNumber: matchNumber++,
+          roundNumber: currentRoundNumber,
+          matchInRound: roundMatches.length + 1
+        })
+        groupBIndex++
+      }
     }
 
-    if (i < groupBPlan.rounds.length) {
-      groupBPlan.rounds[i].matches.forEach(m => {
-        roundMatches.push({
-          ...m,
-          matchNumber: matchNumber++,
-          roundNumber: rounds.length + 1,
-        })
-      })
-    }
+    remainingGroupAMatches.splice(0, groupAIndex)
+    remainingGroupBMatches.splice(0, groupBIndex)
 
     if (roundMatches.length > 0) {
       rounds.push({
-        roundNumber: rounds.length + 1,
+        roundNumber: currentRoundNumber,
         matches: roundMatches,
-        isComplete: false,
+        isComplete: false
       })
     }
   }
@@ -77,6 +106,6 @@ export const createBracketMatchPlan = (
   return {
     rounds,
     totalMatches: groupAPlan.totalMatches + groupBPlan.totalMatches,
-    totalRounds: rounds.length,
+    totalRounds: rounds.length
   }
 }

@@ -26,7 +26,7 @@ const buildMatch = (
   matchNumber,
   roundNumber,
   matchInRound,
-  tournamentGroup
+  tournamentGroup,
 })
 
 const registerTeamsForRound = (

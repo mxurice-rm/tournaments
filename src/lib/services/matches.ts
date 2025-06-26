@@ -2,6 +2,7 @@ import { MatchPlan, Tournament } from '@/types'
 import { database } from '@/database'
 import { matches } from '@/database/schema'
 import { createTableMatchPlan, createBracketMatchPlan } from './match-generators'
+import { getTournamentTeamByID } from '@/lib/database/tournament-team/queries'
 
 export const createMatchPlan = (
   tournament: Tournament,
@@ -39,12 +40,26 @@ export async function generateAndStoreMatches(tournament: Tournament) {
     }
   }
 
-  matchPlan.rounds.forEach(round => {
-    console.log(`\nRunde ${round.roundNumber}:`)
-    round.matches.forEach(match => {
-      console.log(`  Match ${match.matchInRound}: ${match.homeTeam?.name} vs ${match.awayTeam?.name}`)
-    })
-  })
+  await (async () => {
+    for (const round of matchPlan.rounds) {
+      console.log(`\nRunde ${round.roundNumber}:`);
+
+      // Erstelle ein Array von Promises für die Matches
+      const matchPromises = round.matches.map(async (match) => {
+        const team1 = await getTournamentTeamByID(match.homeTeamId);
+        const team2 = await getTournamentTeamByID(match.awayTeamId);
+
+        return `  Match ${match.matchInRound}: ${team1?.name} vs ${team2?.name} Gruppe: ${match.tournamentGroup}`;
+      });
+
+      // Warte, bis alle Promises aufgelöst sind
+      const matchResults = await Promise.all(matchPromises);
+
+      // Logge alle Ergebnisse für die Runde
+      matchResults.forEach((result) => console.log(result));
+    }
+  })();
+
 
   const result = await storeMatchPlan(matchPlan)
   if (!result.success) {
