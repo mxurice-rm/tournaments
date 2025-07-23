@@ -72,20 +72,36 @@ export const createBracketMatchPlan = (
 
       if (shouldTakeFromA) {
         const match = remainingGroupAMatches[groupAIndex]
+
+        // Setze die ersten beiden Spiele (Runde 1, Spiel 1 und 2) auf 'in_progress'
+        const status =
+          currentRoundNumber === 1 && matchNumber <= 2
+            ? 'in_progress'
+            : 'scheduled'
+
         roundMatches.push({
           ...match,
           matchNumber: matchNumber++,
           roundNumber: currentRoundNumber,
-          matchInRound: roundMatches.length + 1
+          matchInRound: roundMatches.length + 1,
+          status: status
         })
         groupAIndex++
       } else if (groupBIndex < remainingGroupBMatches.length) {
         const match = remainingGroupBMatches[groupBIndex]
+
+        // Setze die ersten beiden Spiele (Runde 1, Spiel 1 und 2) auf 'in_progress'
+        const status =
+          currentRoundNumber === 1 && matchNumber <= 2
+            ? 'in_progress'
+            : 'scheduled'
+
         roundMatches.push({
           ...match,
           matchNumber: matchNumber++,
           roundNumber: currentRoundNumber,
-          matchInRound: roundMatches.length + 1
+          matchInRound: roundMatches.length + 1,
+          status: status
         })
         groupBIndex++
       }
@@ -95,10 +111,13 @@ export const createBracketMatchPlan = (
     remainingGroupBMatches.splice(0, groupBIndex)
 
     if (roundMatches.length > 0) {
+      // Markiere Runde 1 als nicht komplett, da die Spiele laufen
+      const isComplete = currentRoundNumber === 1 ? false : false
+
       rounds.push({
         roundNumber: currentRoundNumber,
         matches: roundMatches,
-        isComplete: false
+        isComplete: isComplete
       })
     }
   }

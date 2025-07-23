@@ -23,5 +23,13 @@ export const TournamentTeamSchema = z.object({
     .refine((items) => new Set(items).size === items.length, {
       message: 'Ein Team darf keine doppelten Mitglieder enthalten.'
     })
-    .optional()
+    .optional(),
+  points: z.number().optional(),
+  wins: z.number().optional(),
+  draws: z.number().optional(),
+  looses: z.number().optional(),
+  goals: z.number().optional(),
+  goalsAgainst: z.number().optional()
 })
+
+export const TournamentTeamUpdateSchema = TournamentTeamSchema.partial()

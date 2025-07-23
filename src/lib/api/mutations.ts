@@ -1,5 +1,10 @@
 import { z } from 'zod'
-import { TournamentSchema, TournamentTeamSchema } from '@/lib/schemas'
+import {
+  TournamentMatchSchema,
+  TournamentSchema,
+  TournamentTeamSchema,
+  TournamentTeamUpdateSchema
+} from '@/lib/schemas'
 import { fetchJson } from '@/lib/utils'
 
 export const updateTournament = async (
@@ -26,7 +31,7 @@ export const createTournamentTeam = async (
 
 export const updateTournamentTeam = async (
   teamId: string,
-  values: z.infer<typeof TournamentTeamSchema>
+  values: z.infer<typeof TournamentTeamUpdateSchema>
 ): Promise<void> => {
   await fetchJson(`/api/team/${teamId}`, {
     method: 'PATCH',
@@ -45,20 +50,27 @@ export const createTournament = async (
   })
 }
 
-export const deleteTournament = async (
-  tournamentId: string,
-): Promise<void> => {
+export const deleteTournament = async (tournamentId: string): Promise<void> => {
   await fetchJson(`/api/tournament/${tournamentId}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' }
   })
 }
 
-export const deleteTournamentTeam = async (
-  teamId: string,
-): Promise<void> => {
+export const deleteTournamentTeam = async (teamId: string): Promise<void> => {
   await fetchJson(`/api/team/${teamId}`, {
     method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
+
+export const updateTournamentMatch = async (
+  matchId: string,
+  values: z.infer<typeof TournamentMatchSchema>
+): Promise<void> => {
+  await fetchJson(`/api/match/${matchId}`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(values)
   })
 }

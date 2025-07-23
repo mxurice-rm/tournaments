@@ -11,3 +11,13 @@ export const getTournamentMatches = async (
     .from(matches)
     .where(eq(matches.tournamentId, tournamentId))
 }
+
+export const getTournamentMatchByID = async (
+  id: string
+): Promise<TournamentMatch | null> => {
+  const query = database.select().from(matches).where(eq(matches.id, id))
+
+  const queryResult = await query
+
+  return queryResult[0] ?? null
+}

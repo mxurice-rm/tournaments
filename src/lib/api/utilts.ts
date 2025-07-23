@@ -2,7 +2,7 @@ import { APIContext, APIHandler } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { respondWithError } from '@/lib/utils'
 import { z } from 'zod'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { headers } from 'next/headers'
 
 export async function parseRequestBody<T>(

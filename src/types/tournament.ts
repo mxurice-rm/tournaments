@@ -10,6 +10,12 @@ export type TournamentTeam = {
   captain: string | null
   tournamentId: string
   members: Member[]
+  wins: number | null
+  draws: number | null
+  looses: number | null
+  goals: number | null
+  goalsAgainst: number | null
+  points: number | null
 }
 
 export type Tournament = {

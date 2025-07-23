@@ -2,7 +2,7 @@ import { APIContext } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { z } from 'zod'
-import { TournamentTeamSchema } from '@/lib/schemas'
+import { TournamentTeamUpdateSchema } from '@/lib/schemas'
 import { teamMembers, teams } from '@/database/schema'
 import { eq } from 'drizzle-orm'
 import { database } from '@/database'
@@ -11,8 +11,7 @@ import { validate } from 'uuid'
 import { getTournamentTeamByID } from '@/lib/database/tournament-team/queries'
 import { updatedDiff } from 'deep-object-diff'
 
-const UpdateTournamentTeamSchema = TournamentTeamSchema.partial()
-type UpdateTournamentTeamType = z.infer<typeof UpdateTournamentTeamSchema>
+type UpdateTournamentTeamType = z.infer<typeof TournamentTeamUpdateSchema>
 
 export async function patchTournamentTeamHandler(
   request: NextRequest,
@@ -35,7 +34,7 @@ export async function patchTournamentTeamHandler(
   let updates: UpdateTournamentTeamType
   try {
     const body = await request.json()
-    updates = UpdateTournamentTeamSchema.parse(body)
+    updates = TournamentTeamUpdateSchema.parse(body)
   } catch (error) {
     console.error('Invalid tournament team updates provided', error)
     return respondWithError('Invalid tournament team updates provided', 400)
@@ -46,7 +45,7 @@ export async function patchTournamentTeamHandler(
   const fieldsToUpdate = updatedDiff(tournamentTeam, teamUpdates)
 
   let hasMemberUpdates = false
-  if (members?.length !== 0) {
+  if (members !== undefined) {
     const currentMembers = await database
       .select({ name: teamMembers.name })
       .from(teamMembers)

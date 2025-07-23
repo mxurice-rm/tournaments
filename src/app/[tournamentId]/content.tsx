@@ -1,161 +1,30 @@
 'use client'
 
 import { Tournament, TournamentMatch, TournamentRound } from '@/types'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchTournament } from '@/lib/api/queries'
 import PageContainer from '@/components/common/page/page-container'
-import { Clock, Trophy } from 'lucide-react'
+import { Trophy } from 'lucide-react'
 import PageSection from '@/components/common/page/page-section'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
-interface UpcomingMatchesGroupProps {
-  group: string
-  upcomingRounds: Array<{
-    round: TournamentRound
-    matches: TournamentMatch[]
-  }>
-  tournament: Tournament
-}
-
-const getTeamName = (tournament: Tournament, teamId: string) => {
-  return tournament.teams.find((team) => team.id === teamId)?.name ?? ''
-}
-
-const MatchCard = ({
-                     tournament,
-                     match,
-                     isCurrentRound = false
-                   }: {
-  tournament: Tournament
-  match: TournamentMatch
-  isCurrentRound?: boolean
-}) => (
-  <Card className={`${isCurrentRound ? 'border-primary' : ''}`}>
-    <CardHeader>
-      <div className="flex items-center justify-between">
-        <CardTitle className={`${isCurrentRound ? 'text-lg' : 'text-base'}`}>
-          Spiel {match.matchNumber} • Gruppe {match.tournamentGroup}
-        </CardTitle>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="text-center flex-1">
-            <div className="font-semibold text-sm">
-              {getTeamName(tournament, match.homeTeamId)}
-            </div>
-            <div className="text-xs text-muted-foreground">Heim</div>
-          </div>
-          <div className="px-4">
-            <div className="text-center">
-              {match.status === 'completed' ||
-              match.homeScore !== null ||
-              match.awayScore !== null ? (
-                <div className="flex items-center gap-2">
-                  <div className="bg-muted px-2 py-1 rounded text-lg font-bold min-w-[2rem]">
-                    {match.homeScore ?? 0}
-                  </div>
-                  <div className="text-muted-foreground">:</div>
-                  <div className="bg-muted px-2 py-1 rounded text-lg font-bold min-w-[2rem]">
-                    {match.awayScore ?? 0}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-lg font-bold">VS</div>
-              )}
-            </div>
-          </div>
-          <div className="text-center flex-1">
-            <div className="font-semibold text-sm">
-              {getTeamName(tournament, match.awayTeamId)}
-            </div>
-            <div className="text-xs text-muted-foreground">Auswärts</div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          <span>
-            {match.status === 'completed'
-              ? 'Beendet'
-              : isCurrentRound
-                ? 'Laufend'
-                : 'Geplant'}{' '}
-            • Runde {match.roundNumber}
-          </span>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-)
-
-const UpcomingMatchesGroup = ({
-                                group,
-                                upcomingRounds,
-                                tournament
-                              }: UpcomingMatchesGroupProps) => {
-  const totalMatches = upcomingRounds.reduce(
-    (total, { matches }) => total + matches.length,
-    0
-  )
-
-  // Das erste Spiel der Gruppe als nächstes markieren
-  const nextMatch = upcomingRounds[0]?.matches[0] || null
-
-  return (
-    <div>
-      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        Gruppe {group}
-        <Badge variant="outline">{totalMatches} Spiele</Badge>
-      </h3>
-      {upcomingRounds.length > 0 ? (
-        <div className="space-y-6">
-          {upcomingRounds.map(({ round, matches }, roundIndex) => (
-            <div key={round.roundNumber} className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground border-l-2 border-primary pl-2">
-                Runde {round.roundNumber}
-                {roundIndex === 0 && (
-                  <Badge className="ml-2 text-xs" variant="secondary">
-                    Als nächstes
-                  </Badge>
-                )}
-              </h4>
-              <div className="space-y-3">
-                {matches.map((match, matchIndex) => {
-                  const isNextMatch = nextMatch && match.id === nextMatch.id
-                  return (
-                    <div key={match.id} className="relative">
-                      {isNextMatch && (
-                        <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-primary rounded-full" />
-                      )}
-                      <MatchCard
-                        tournament={tournament}
-                        match={{ ...match, roundNumber: round.roundNumber }}
-                        isCurrentRound={isNextMatch}
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground">
-          Keine weiteren Spiele für Gruppe {group}
-        </p>
-      )}
-    </div>
-  )
-}
+import { MatchCard, UpcomingMatchesGroup } from '@/app/[tournamentId]/utils'
+import { Button } from '@/components/ui/button'
+import { updateTournamentMatch, updateTournamentTeam } from '@/lib/api/mutations'
+import {
+  calculateTeamStats,
+  getNextRoundMatches,
+  getUpcomingRoundsByGroup
+} from '@/app/[tournamentId]/helper'
 
 const TournamentPublicView = ({
-                                initialTournament
-                              }: {
+  initialTournament,
+  loggedIn
+}: {
+  loggedIn: boolean
   initialTournament: Tournament
 }) => {
+  const queryClient = useQueryClient()
+
   const { data: tournament } = useQuery<Tournament>({
     queryKey: [initialTournament.id],
     queryFn: () => fetchTournament(initialTournament.id),
@@ -175,7 +44,7 @@ const TournamentPublicView = ({
 
   if (currentRound) {
     currentRoundMatches = currentRound.matches
-      .filter((match) => match.status === 'scheduled')
+      .filter((match) => match.status === 'in_progress')
       .sort((a, b) => a.matchInRound - b.matchInRound)
 
     upcomingRounds = rounds
@@ -185,56 +54,94 @@ const TournamentPublicView = ({
       )
   }
 
-  const getMatchesByGroup = (matches: TournamentMatch[], group: string) => {
-    return matches.filter((match) => match.tournamentGroup === group)
+  const upcomingMatchesByGroup = getUpcomingRoundsByGroup(upcomingRounds)
+
+  const isGroupPhaseCompleted = (): boolean => {
+    if (!tournament.matchPlan?.rounds || tournament.matchPlan.rounds.length === 0) {
+      return false
+    }
+
+    for (const round of tournament.matchPlan.rounds) {
+      for (const match of round.matches) {
+        if (match.status !== 'completed') {
+          return false
+        }
+
+        if (match.homeScore === null || match.awayScore === null) {
+          return false
+        }
+      }
+    }
+
+    return true
   }
 
-  const getUpcomingRoundsByGroup = () => {
-    if (!upcomingRounds) return { groupA: [], groupB: [] }
+  const groupPhaseCompleted = isGroupPhaseCompleted()
 
-    const groupA: Array<{
-      round: TournamentRound
-      matches: TournamentMatch[]
-    }> = []
-    const groupB: Array<{
-      round: TournamentRound
-      matches: TournamentMatch[]
-    }> = []
+  const createTeamUpdates = (matches: TournamentMatch[]): Promise<void>[] => {
+    const teamUpdates: Promise<void>[] = []
 
-    upcomingRounds.forEach((round) => {
-      const groupAMatches = getMatchesByGroup(round.matches, 'A')
-      const groupBMatches = getMatchesByGroup(round.matches, 'B')
+    matches.forEach((match) => {
+      const homeStats = calculateTeamStats(tournament, match, match.homeTeamId)
+      teamUpdates.push(updateTournamentTeam(match.homeTeamId, homeStats))
 
-      if (groupAMatches.length > 0) {
-        groupA.push({ round, matches: groupAMatches })
-      }
-
-      if (groupBMatches.length > 0) {
-        groupB.push({ round, matches: groupBMatches })
-      }
+      const awayStats = calculateTeamStats(tournament, match, match.awayTeamId)
+      teamUpdates.push(updateTournamentTeam(match.awayTeamId, awayStats))
     })
 
-    return { groupA, groupB }
+    return teamUpdates
   }
 
-  const currentMatchesByGroup = {
-    A: getMatchesByGroup(currentRoundMatches, 'A'),
-    B: getMatchesByGroup(currentRoundMatches, 'B')
+  const endRoundMutation = useMutation({
+    mutationFn: async () => {
+      const updatePromises: Promise<void>[] = []
+
+      const completeCurrentMatches = currentRoundMatches.map((match) =>
+        updateTournamentMatch(match.id, {
+          status: 'completed'
+        })
+      )
+      updatePromises.push(...completeCurrentMatches)
+
+      const teamStatsUpdates = createTeamUpdates(currentRoundMatches)
+      updatePromises.push(...teamStatsUpdates)
+
+      const nextRoundMatches = getNextRoundMatches(currentRound!, rounds)
+      if (nextRoundMatches.length > 0) {
+        const startNextMatches = nextRoundMatches.map((match) =>
+          updateTournamentMatch(match.id, {
+            status: 'in_progress'
+          })
+        )
+        updatePromises.push(...startNextMatches)
+      }
+
+      return Promise.all(updatePromises)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [tournament.id] })
+    },
+    onError: (error) => {
+      console.error('Error ending round:', error)
+    }
+  })
+
+  const canEndRound =
+    currentRoundMatches.length > 0 &&
+    currentRoundMatches.every(
+      (match) => match.homeScore !== null && match.awayScore !== null
+    )
+
+  const handleEndRound = async () => {
+    if (!canEndRound || !currentRound) return
+
+    try {
+      await endRoundMutation.mutateAsync()
+    } catch (error) {
+      // Error is handled in mutation.onError
+      console.error('End round error:', error)
+    }
   }
-
-  const upcomingMatchesByGroup = getUpcomingRoundsByGroup()
-
-  const nextMatchByGroup = {
-    A: upcomingMatchesByGroup.groupA[0]?.matches[0] || null,
-    B: upcomingMatchesByGroup.groupB[0]?.matches[0] || null
-  }
-
-  const allMatches = rounds?.flatMap((round) =>
-    round.matches.map((match) => ({
-      ...match,
-      roundNumber: round.roundNumber
-    }))
-  )
 
   return (
     <PageContainer
@@ -260,6 +167,7 @@ const TournamentPublicView = ({
             <div className="grid gap-4 md:grid-cols-2">
               {currentRoundMatches.map((match) => (
                 <MatchCard
+                  isLoggedIn={loggedIn}
                   tournament={tournament}
                   key={match.id}
                   match={match}
@@ -267,26 +175,54 @@ const TournamentPublicView = ({
                 />
               ))}
             </div>
+            {loggedIn && (
+              <Button
+                className="w-full"
+                size="sm"
+                onClick={handleEndRound}
+                disabled={!canEndRound || endRoundMutation.isPending}
+                variant={canEndRound ? 'default' : 'secondary'}
+              >
+                {endRoundMutation.isPending
+                  ? 'Runde wird beendet...'
+                  : canEndRound
+                    ? 'Runde beenden'
+                    : 'Runde beenden (Ergebnisse fehlen)'}
+              </Button>
+            )}
+          </div>
+        ) : groupPhaseCompleted ? (
+          <div className="text-center space-y-4 py-8">
+            <h3 className="text-2xl font-bold">Gruppenphase beendet!</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Alle Spiele der Gruppenphase sind abgeschlossen.
+              Die Playoff-Phase kann nun beginnen.
+            </p>
+            <Badge variant="outline" className="text-sm">
+              Alle {tournament.matchPlan?.totalMatches} Spiele gespielt
+            </Badge>
           </div>
         ) : (
-          <p>ad</p>
+          <p>asd</p>
         )}
       </PageSection>
 
-      <PageSection title="Alle kommenden Spiele" headerAdditional={null}>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <UpcomingMatchesGroup
-            group="A"
-            upcomingRounds={upcomingMatchesByGroup.groupA}
-            tournament={tournament}
-          />
-          <UpcomingMatchesGroup
-            group="B"
-            upcomingRounds={upcomingMatchesByGroup.groupB}
-            tournament={tournament}
-          />
-        </div>
-      </PageSection>
+      {!groupPhaseCompleted && (
+        <PageSection title="Alle kommenden Spiele" headerAdditional={null}>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <UpcomingMatchesGroup
+              group="A"
+              upcomingRounds={upcomingMatchesByGroup.groupA}
+              tournament={tournament}
+            />
+            <UpcomingMatchesGroup
+              group="B"
+              upcomingRounds={upcomingMatchesByGroup.groupB}
+              tournament={tournament}
+            />
+          </div>
+        </PageSection>
+      )}
     </PageContainer>
   )
 }
