@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { Tournament } from '@/types'
 import { fetchTournament } from '@/lib/api/queries'
@@ -8,6 +8,8 @@ import { Trophy } from 'lucide-react'
 import React from 'react'
 import TournamentInformation from '@/components/feature/tournament/tournament-information'
 import TournamentTeamList from '@/components/feature/tournament-team/tournament-team-list'
+import { Button } from '@/components/ui/button'
+import { usePathname, useRouter } from 'next/navigation'
 
 const TournamentView = ({
   initialTournament
@@ -21,6 +23,9 @@ const TournamentView = ({
     refetchOnWindowFocus: false
   })
 
+  const router = useRouter()
+  const pathname = usePathname()
+
   return (
     <PageContainer
       title="Turnierverwaltung"
@@ -29,6 +34,15 @@ const TournamentView = ({
     >
       <TournamentInformation tournament={tournament} />
       <TournamentTeamList tournament={tournament} />
+
+      {tournament.teams.length !== 0 && (
+        <Button
+          onClick={() => router.push(`${pathname}/matches`)}
+          className="w-full"
+        >
+          Spielplan anzeigen
+        </Button>
+      )}
     </PageContainer>
   )
 }

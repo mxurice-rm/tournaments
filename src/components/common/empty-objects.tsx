@@ -12,8 +12,8 @@ const EmptyObjects = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
-      <div className="p-4 rounded-full bg-secondary/30">
-        <Trophy className="h-8 w-8 text-secondary" />
+      <div className="p-4 rounded-full bg-muted">
+        <Trophy className="h-8 w-8 text-muted-foreground" />
       </div>
       <div>
         <h3 className="font-semibold">{title}</h3>

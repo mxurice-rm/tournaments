@@ -13,7 +13,7 @@ const PageContainer = ({
   children: React.ReactNode
 }) => {
   return (
-    <div className="container mx-auto p-10">
+    <div className="container mx-auto p-5">
       <PageHeader title={title} description={description} icon={icon} />
 
       <div className="space-y-12">{children}</div>
@@ -21,4 +21,4 @@ const PageContainer = ({
   )
 }
 
-export default PageContainer
+export default PageContainer;

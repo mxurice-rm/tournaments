@@ -17,7 +17,7 @@ export default function AuthLayout({
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-background text-primary">
               <Trophy className="size-6" />
             </div>
-            WIR SPIELEN FUßBALL
+            RW BERRENDORF+ FUßBALL
           </a>
           <p className="text-primary-foreground">
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam

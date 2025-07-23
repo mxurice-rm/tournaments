@@ -1,6 +1,6 @@
 import { Tournament } from '@/types'
 import { database } from '@/database'
-import { teamMembers, teams, tournaments } from '@/database/schema'
+import { matches, teamMembers, teams, tournaments } from '@/database/schema'
 import { eq, SQL } from 'drizzle-orm'
 import { hydrateTournaments } from '@/lib/database/tournament/utils'
 import { sql } from 'drizzle-orm/sql/sql'
@@ -10,11 +10,13 @@ const findTournament = async (filter: SQL): Promise<Tournament | null> => {
     .select({
       tournaments,
       teams,
-      teamMembers
+      teamMembers,
+      matches
     })
     .from(tournaments)
     .leftJoin(teams, eq(teams.tournamentId, tournaments.id))
     .leftJoin(teamMembers, eq(teamMembers.teamId, teams.id))
+    .leftJoin(matches, eq(matches.tournamentId, tournaments.id))
     .where(filter)
 
   const queryResult = await query

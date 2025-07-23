@@ -7,7 +7,7 @@ const Header = () => {
       <HeaderLine />
       <div className="flex gap-5 items-center">
         <h1 className="uppercase font-extrabold text-center">
-          WIR SPIELEN FUßBALL
+          RW BERRENDORF FUßBALL
         </h1>
       </div>
       <p className="text-center font-medium max-w-4xl text-muted-foreground">

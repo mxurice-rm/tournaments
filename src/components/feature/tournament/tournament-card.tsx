@@ -14,7 +14,7 @@ import { tournamentTypeMapping } from '@/lib/utils'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 
-const TournamentDetail = ({
+export const TournamentDetail = ({
   icon,
   detail
 }: {

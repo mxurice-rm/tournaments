@@ -20,6 +20,7 @@ export type Tournament = {
   location: string
   type: 'table' | 'bracket'
   teams: TournamentTeam[]
+  matchPlan: MatchPlan | null
 }
 
 export type TournamentMatch = {
