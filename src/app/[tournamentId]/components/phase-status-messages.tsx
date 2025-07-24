@@ -1,13 +1,10 @@
 import { Tournament } from '@/types'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { TournamentPhaseStatus } from '../helper'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { z } from 'zod'
-import { TournamentTeamSchema } from '@/lib/schemas'
-import { createTournamentPlayOffMatches, createTournamentTeam } from '@/lib/api/mutations'
+import { createTournamentPlayOffMatches } from '@/lib/api/mutations'
 import { errorToast, successToast } from '@/lib/utils'
 
 interface PhaseStatusMessagesProps {
@@ -30,7 +27,7 @@ export const PhaseStatusMessages = ({
       return await createTournamentPlayOffMatches(tournament.id, phase)
     },
     onSuccess: () => {
-      successToast("Spiele wurden erfolgreich erstellt")
+      successToast('Spiele wurden erfolgreich erstellt')
       queryClient.invalidateQueries({ queryKey: [tournament.id] })
     },
     onError: () => {
@@ -49,9 +46,7 @@ export const PhaseStatusMessages = ({
           <Button
             size="sm"
             className="px-5"
-            onClick={() =>
-              router.push(`dashboard/${tournament.id}/matches`)
-            }
+            onClick={() => router.push(`dashboard/${tournament.id}/matches`)}
           >
             <Plus />
             Spiele erstellen
@@ -72,7 +67,7 @@ export const PhaseStatusMessages = ({
           <Button
             size="sm"
             className="px-5"
-            onClick={() => mutation.mutateAsync("final")}
+            onClick={() => mutation.mutateAsync('final')}
           >
             <Plus />
             Final Spiel erstellen
@@ -87,14 +82,14 @@ export const PhaseStatusMessages = ({
       <div className="text-center space-y-2 py-5">
         <h3 className="text-2xl font-bold">Gruppenphase beendet!</h3>
         <p className="text-muted-foreground max-w-md mx-auto">
-          Alle Spiele der Gruppenphase sind abgeschlossen. Die
-          Playoff-Phase kann nun beginnen.
+          Alle Spiele der Gruppenphase sind abgeschlossen. Die Playoff-Phase
+          kann nun beginnen.
         </p>
         {isLoggedIn && (
           <Button
             size="sm"
             className="px-5"
-            onClick={() => mutation.mutateAsync("semifinal")}
+            onClick={() => mutation.mutateAsync('semifinal')}
           >
             <Plus />
             Halbfinal Spiele erstellen

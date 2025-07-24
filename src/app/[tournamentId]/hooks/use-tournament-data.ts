@@ -9,16 +9,18 @@ import {
 } from '../helper'
 
 export const useTournamentData = (tournament: Tournament) => {
-  const data = useMemo(() => {
-    const rounds = tournament.matchPlan?.rounds?.sort(
-      (a, b) => a.roundNumber - b.roundNumber
-    ) ?? []
+  return useMemo(() => {
+    const rounds =
+      tournament.matchPlan?.rounds?.sort(
+        (a, b) => a.roundNumber - b.roundNumber
+      ) ?? []
 
     const currentRound = rounds.find((round) => !round.isComplete)
 
-    const currentRoundMatches = currentRound?.matches
-      .filter((match) => match.status === 'in_progress')
-      .sort((a, b) => a.matchInRound - b.matchInRound) ?? []
+    const currentRoundMatches =
+      currentRound?.matches
+        .filter((match) => match.status === 'in_progress')
+        .sort((a, b) => a.matchInRound - b.matchInRound) ?? []
 
     const upcomingRounds = rounds
       .filter((round) => round.roundNumber > (currentRound?.roundNumber ?? 0))
@@ -28,9 +30,15 @@ export const useTournamentData = (tournament: Tournament) => {
 
     const upcomingMatchesByGroup = getUpcomingRoundsByGroup(upcomingRounds)
     const completedMatches = getAllCompletedMatches(tournament)
-    const completedMatchesByGroup = groupCompletedMatches(completedMatches, tournament)
+    const completedMatchesByGroup = groupCompletedMatches(
+      completedMatches,
+      tournament
+    )
     const phaseStatus = getTournamentPhaseStatus(tournament)
-    const tournamentWinner = getTournamentWinner(tournament, phaseStatus.finalCompleted)
+    const tournamentWinner = getTournamentWinner(
+      tournament,
+      phaseStatus.finalCompleted
+    )
 
     const canEndRound =
       currentRoundMatches.length > 0 &&
@@ -51,6 +59,4 @@ export const useTournamentData = (tournament: Tournament) => {
       canEndRound
     }
   }, [tournament])
-
-  return data
 }
