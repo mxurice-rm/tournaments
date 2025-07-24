@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import { database } from "@/database";
-import { user } from "@/database/schema";
+import { database } from "./index";
+import { user } from "./schema";
 import { eq } from "drizzle-orm";
 
 dotenv.config();
