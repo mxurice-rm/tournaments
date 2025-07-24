@@ -3,7 +3,7 @@ import { database } from '@/database'
 import { teamMembers, teams } from '@/database/schema'
 import { and, eq, SQL } from 'drizzle-orm'
 import { sql } from 'drizzle-orm/sql/sql'
-import { hydrateTournamentTeam } from '@/lib/database/tournament-team/utilts'
+import { hydrateTournamentTeam } from '@/lib/database/tournament-team/utils'
 
 const findTournamentTeam = async (
   filter: SQL | undefined

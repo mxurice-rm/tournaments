@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { TournamentAPIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { validateEntityExists, validateParams } from '@/lib/api/validator'
 import { validate } from 'uuid'
@@ -9,7 +9,7 @@ import { generateAndStorePlayoffMatches } from '@/lib/services/matches'
 
 export async function postTournamentPlayoffHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TournamentAPIContext
 ): Promise<NextResponse> {
   const {
     params: { tournamentId },
@@ -27,7 +27,10 @@ export async function postTournamentPlayoffHandler(
     const { phase } = body
 
     if (!phase || !['semifinal', 'final'].includes(phase)) {
-      return respondWithError('Invalid phase. Must be "semifinal" or "final"', 400)
+      return respondWithError(
+        'Invalid phase. Must be "semifinal" or "final"',
+        400
+      )
     }
 
     // Hole alle existierenden Matches
@@ -37,7 +40,7 @@ export async function postTournamentPlayoffHandler(
     }
 
     // Prüfe ob Phase bereits existiert
-    const phaseExists = existingMatches.some(match => match.phase === phase)
+    const phaseExists = existingMatches.some((match) => match.phase === phase)
     if (phaseExists) {
       return respondWithError(`${phase} matches already exist`, 400)
     }
@@ -45,11 +48,12 @@ export async function postTournamentPlayoffHandler(
     // Validierungen für spezifische Phasen
     if (phase === 'semifinal') {
       // Prüfe ob Gruppenphase abgeschlossen ist
-      const groupMatches = existingMatches.filter(m => m.phase === 'group')
-      const allGroupMatchesCompleted = groupMatches.every(m =>
-        m.status === 'completed' &&
-        m.homeScore !== null &&
-        m.awayScore !== null
+      const groupMatches = existingMatches.filter((m) => m.phase === 'group')
+      const allGroupMatchesCompleted = groupMatches.every(
+        (m) =>
+          m.status === 'completed' &&
+          m.homeScore !== null &&
+          m.awayScore !== null
       )
 
       if (!allGroupMatchesCompleted) {
@@ -59,15 +63,18 @@ export async function postTournamentPlayoffHandler(
 
     if (phase === 'final') {
       // Prüfe ob Halbfinale abgeschlossen ist
-      const semifinalMatches = existingMatches.filter(m => m.phase === 'semifinal')
+      const semifinalMatches = existingMatches.filter(
+        (m) => m.phase === 'semifinal'
+      )
       if (semifinalMatches.length === 0) {
         return respondWithError('Semifinal matches not created yet', 400)
       }
 
-      const allSemifinalCompleted = semifinalMatches.every(m =>
-        m.status === 'completed' &&
-        m.homeScore !== null &&
-        m.awayScore !== null
+      const allSemifinalCompleted = semifinalMatches.every(
+        (m) =>
+          m.status === 'completed' &&
+          m.homeScore !== null &&
+          m.awayScore !== null
       )
 
       if (!allSemifinalCompleted) {
@@ -95,7 +102,6 @@ export async function postTournamentPlayoffHandler(
       savedMatches: result.savedMatches,
       message: `${phase === 'semifinal' ? 'Semifinal' : 'Final'} matches created successfully`
     })
-
   } catch (error) {
     console.error(`Error creating matches:`, error)
     return respondWithError(`Error creating matches`, 500)

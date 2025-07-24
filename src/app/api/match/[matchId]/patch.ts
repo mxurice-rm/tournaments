@@ -1,11 +1,11 @@
-import { APIContext, TournamentMatch } from '@/types'
+import { MatchAPIContext, TournamentMatch } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { z } from 'zod'
 import { matches } from '@/database/schema'
 import { eq } from 'drizzle-orm'
 import { database } from '@/database'
-import { validateEntityExists, validateParams } from '@/lib/api/validator'
+import { validateEntityExists } from '@/lib/api/validator'
 import { validate } from 'uuid'
 import { updatedDiff } from 'deep-object-diff'
 import { getTournamentMatchByID } from '@/lib/database/matches/queries'
@@ -38,14 +38,21 @@ const validateMatchUpdate = (
     }
   }
 
-  if (match.status === 'scheduled' && (fieldsToUpdate.awayScore !== undefined || fieldsToUpdate.homeScore !== undefined)) {
+  if (
+    match.status === 'scheduled' &&
+    (fieldsToUpdate.awayScore !== undefined ||
+      fieldsToUpdate.homeScore !== undefined)
+  ) {
     return {
       fieldsToUpdate,
       error: respondWithError('Game has not started yet', 400)
     }
   }
 
-  if (fieldsToUpdate.status === 'completed' && (match.homeScore === null || match.awayScore === null)) {
+  if (
+    fieldsToUpdate.status === 'completed' &&
+    (match.homeScore === null || match.awayScore === null)
+  ) {
     return {
       fieldsToUpdate,
       error: respondWithError('No goals set', 400)
@@ -55,13 +62,15 @@ const validateMatchUpdate = (
   return { fieldsToUpdate }
 }
 
-const updateMatchInDatabase = async (params: MatchUpdateParams): Promise<NextResponse | null> => {
+const updateMatchInDatabase = async (
+  params: MatchUpdateParams
+): Promise<NextResponse | null> => {
   try {
     await database
       .update(matches)
       .set(params.fieldsToUpdate)
       .where(eq(matches.id, params.matchId))
-    
+
     return null
   } catch (error) {
     console.error('Error updating match:', error)
@@ -69,15 +78,33 @@ const updateMatchInDatabase = async (params: MatchUpdateParams): Promise<NextRes
   }
 }
 
+const extractMatchId = async (context?: MatchAPIContext): Promise<string | null> => {
+  if (!context?.params) {
+    return null
+  }
+
+  try {
+    const params = await context.params
+    return params?.matchId || null
+  } catch (error) {
+    console.error('Error extracting match ID from context:', error)
+    return null
+  }
+}
+
 export async function patchMatchHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: MatchAPIContext
 ): Promise<NextResponse> {
-  const {
-    params: { matchId },
-    error: paramError
-  } = await validateParams(request, { matchId: validate }, context)
-  if (paramError) return paramError
+  const matchId = await extractMatchId(context)
+  if (!matchId) {
+    return respondWithError('Match ID is required', 400)
+  }
+
+  // Validate matchId
+  if (!validate(matchId)) {
+    return respondWithError('Invalid match ID format', 400)
+  }
 
   const { entity: match, error: matchError } = await validateEntityExists(
     matchId,
@@ -94,7 +121,10 @@ export async function patchMatchHandler(
     return respondWithError('Invalid match updates provided', 400)
   }
 
-  const { fieldsToUpdate, error: validationError } = validateMatchUpdate(match!, updates)
+  const { fieldsToUpdate, error: validationError } = validateMatchUpdate(
+    match!,
+    updates
+  )
   if (validationError) return validationError
 
   const updateError = await updateMatchInDatabase({

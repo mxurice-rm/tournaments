@@ -1,12 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { NextResponse } from 'next/server'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { getTournaments } from '@/lib/database/tournament'
 
-export async function getTournamentsHandler(
-  request: NextRequest,
-  context?: APIContext
-): Promise<NextResponse> {
+export async function getTournamentsHandler(): Promise<NextResponse> {
   try {
     const tournaments = await getTournaments()
 

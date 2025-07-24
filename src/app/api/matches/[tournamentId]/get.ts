@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { TournamentAPIContext } from '@/types'
 import { validateEntityExists, validateParams } from '@/lib/api/validator'
 import { validate } from 'uuid'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
@@ -7,7 +7,7 @@ import { getTournamentByID } from '@/lib/database/tournament'
 
 export async function getTournamentMatchesHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TournamentAPIContext
 ): Promise<NextResponse> {
   const {
     params: { tournamentId },

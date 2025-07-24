@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { TournamentSchema } from '@/lib/schemas'
 import { database } from '@/database'
@@ -7,8 +6,7 @@ import { tournaments } from '@/database/schema'
 import { getTournament } from '@/lib/database/tournament'
 
 export async function postTournamentHandler(
-  request: NextRequest,
-  context?: APIContext
+  request: NextRequest
 ): Promise<NextResponse> {
   try {
     let tournamentData

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { TeamAPIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { database } from '@/database'
 import { teams } from '@/database/schema'
@@ -10,7 +10,7 @@ import { getTournamentTeamByID } from '@/lib/database/tournament-team/queries'
 
 export async function deleteTournamentTeamHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TeamAPIContext
 ): Promise<NextResponse> {
   const {
     params: { teamId },

@@ -1,4 +1,4 @@
-import { withAuthentication } from '@/lib/api/utilts'
+import { withAuthentication } from '@/lib/api/utils'
 import { postTournamentHandler } from '@/app/api/tournament/post'
 import { getTournamentsHandler } from '@/app/api/tournament/get'
 

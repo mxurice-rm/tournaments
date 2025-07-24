@@ -1,4 +1,4 @@
-import { APIContext, Tournament } from '@/types'
+import { Tournament, TournamentAPIContext } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { z } from 'zod'
@@ -18,7 +18,7 @@ type UpdateTournamentType = z.infer<typeof UpdateTournamentSchema>
 
 export async function patchTournamentHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TournamentAPIContext
 ): Promise<NextResponse> {
   const {
     params: { tournamentId },
@@ -26,11 +26,8 @@ export async function patchTournamentHandler(
   } = await validateParams(request, { tournamentId: validate }, context)
   if (paramError) return paramError
 
-  const { entity: tournament, error: tournamentError } = await validateEntityExists(
-    tournamentId,
-    getTournamentByID,
-    'Tournament'
-  )
+  const { entity: tournament, error: tournamentError } =
+    await validateEntityExists(tournamentId, getTournamentByID, 'Tournament')
   if (tournamentError) return tournamentError
 
   let updates: UpdateTournamentType
@@ -63,8 +60,14 @@ export async function patchTournamentHandler(
   })
 }
 
-function getChangedFields(tournament: Tournament, updates: UpdateTournamentType): Partial<UpdateTournamentType> {
-  const changes = updatedDiff(tournament, updates) as Partial<UpdateTournamentType>
+function getChangedFields(
+  tournament: Tournament,
+  updates: UpdateTournamentType
+): Partial<UpdateTournamentType> {
+  const changes = updatedDiff(
+    tournament,
+    updates
+  ) as Partial<UpdateTournamentType>
 
   if (updates.date && changes.date) {
     const existingDateISO = tournament.date.toISOString()

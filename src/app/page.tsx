@@ -5,18 +5,9 @@ import Footer from '@/components/layout/footer'
 import { useQuery } from '@tanstack/react-query'
 import { Tournament } from '@/types'
 import { fetchTournaments } from '@/lib/api/queries'
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import React, { useEffect } from 'react'
-import {
-  ArrowRight,
-  Calendar,
-  FileText,
-  MapPin,
-  Tag,
-  Trophy,
-  Users
-} from 'lucide-react'
-import { tournamentTypeMapping } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
+import React from 'react'
+import { ArrowRight, Calendar, MapPin, Trophy, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { TournamentDetail } from '@/components/feature/tournament/tournament-card'
@@ -65,8 +56,8 @@ const Page = () => {
                 <div className="flex items-center gap-2 px-2 py-1 bg-secondary-foreground/5 rounded-md">
                   <Users className="h-3 w-3 text-primary" />
                   <span className="text-xs font-medium text-secondary-foreground">
-                  {tournament.teams?.length || 0} Teams
-                </span>
+                    {tournament.teams?.length || 0} Teams
+                  </span>
                 </div>
               </div>
 

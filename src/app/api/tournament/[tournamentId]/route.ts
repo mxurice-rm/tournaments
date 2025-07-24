@@ -1,7 +1,7 @@
 import { postTournamentTeamHandler } from '@/app/api/tournament/[tournamentId]/post'
 import { getTournamentHandler } from '@/app/api/tournament/[tournamentId]/get'
 import { patchTournamentHandler } from '@/app/api/tournament/[tournamentId]/patch'
-import { withAuthentication } from '@/lib/api/utilts'
+import { withAuthentication } from '@/lib/api/utils'
 import { deleteTournamentHandler } from '@/app/api/tournament/[tournamentId]/delete'
 
 export const POST = withAuthentication(postTournamentTeamHandler)

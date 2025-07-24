@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { TournamentAPIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { TournamentTeamSchema } from '@/lib/schemas'
 import { getTournamentTeam } from '@/lib/database/tournament-team/queries'
@@ -11,7 +11,7 @@ import { getTournamentByID } from '@/lib/database/tournament'
 
 export async function postTournamentTeamHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TournamentAPIContext
 ): Promise<NextResponse> {
   const {
     params: { tournamentId },

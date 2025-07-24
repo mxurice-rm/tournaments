@@ -1,4 +1,4 @@
-import { APIContext } from '@/types'
+import { TeamAPIContext } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { z } from 'zod'
@@ -15,7 +15,7 @@ type UpdateTournamentTeamType = z.infer<typeof TournamentTeamUpdateSchema>
 
 export async function patchTournamentTeamHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TeamAPIContext
 ): Promise<NextResponse> {
   const {
     params: { teamId },

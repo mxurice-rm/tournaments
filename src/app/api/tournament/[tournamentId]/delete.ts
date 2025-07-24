@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { TournamentAPIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { database } from '@/database'
 import { tournaments } from '@/database/schema'
@@ -10,7 +10,7 @@ import { getTournamentByID } from '@/lib/database/tournament'
 
 export async function deleteTournamentHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TournamentAPIContext
 ): Promise<NextResponse> {
   const {
     params: { tournamentId },
@@ -28,10 +28,9 @@ export async function deleteTournamentHandler(
   try {
     await database.delete(tournaments).where(eq(tournaments.id, tournamentId))
 
-    return respondWithSuccess({ message: "Tournament deleted successfully" })
+    return respondWithSuccess({ message: 'Tournament deleted successfully' })
   } catch (error) {
-    console.error("Error deleting tournament: ", error)
-    return respondWithError("Error deleting tournament", 500)
+    console.error('Error deleting tournament: ', error)
+    return respondWithError('Error deleting tournament', 500)
   }
-
 }

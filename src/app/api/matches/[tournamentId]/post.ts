@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { APIContext } from '@/types'
+import { TournamentAPIContext } from '@/types'
 import { respondWithError, respondWithSuccess } from '@/lib/utils'
 import { validateEntityExists, validateParams } from '@/lib/api/validator'
 import { validate } from 'uuid'
@@ -12,7 +12,7 @@ import { eq } from 'drizzle-orm'
 
 export async function postTournamentMatchHandler(
   request: NextRequest,
-  context?: APIContext
+  context?: TournamentAPIContext
 ): Promise<NextResponse> {
   const {
     params: { tournamentId },
