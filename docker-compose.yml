@@ -2,6 +2,7 @@ services:
   database:
     image: postgres:latest
     container_name: tournament-db
+    restart: unless-stopped
     ports:
       - "5432:${PG_PORT}"
     environment:
@@ -15,10 +16,12 @@ services:
       retries: 10
     volumes:
       - databaseData:/var/lib/postgresql/data
+    networks:
+      - tournament-network
 
   nextjs:
     container_name: tournament-next
-    image: user/next:latest
+    restart: unless-stopped
     build:
       context: .
       dockerfile: next.Dockerfile
@@ -28,10 +31,17 @@ services:
       - .env
     depends_on:
       - database
+    networks:
+      - tournament-network
 
   adminer:
     image: adminer:latest
-    container_name: adminer
+    container_name: tournament-adminer
+    restart: unless-stopped
+    depends_on:
+      - database
+    networks:
+      - tournament-network
     ports:
       - "8080:8080"
     environment:
@@ -40,5 +50,25 @@ services:
       ADMINER_DEFAULT_DB_NAME: ${PG_DATABASE}
     command: php -S 0.0.0.0:8080 -t /var/www/html
 
+  nginx:
+    image: nginx:alpine
+    container_name: tournament-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - nextjs
+      - adminer
+    networks:
+      - tournament-network
+
 volumes:
   databaseData:
+
+networks:
+  tournament-network:
+    driver: bridge
