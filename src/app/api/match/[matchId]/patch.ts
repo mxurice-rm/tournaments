@@ -13,6 +13,62 @@ import { TournamentMatchSchema } from '@/lib/schemas'
 
 type UpdateMatchType = z.infer<typeof TournamentMatchSchema>
 
+interface MatchValidationResult {
+  fieldsToUpdate: Partial<UpdateMatchType>
+  error?: NextResponse
+}
+
+interface MatchUpdateParams {
+  matchId: string
+  updates: UpdateMatchType
+  match: TournamentMatch
+  fieldsToUpdate: Partial<UpdateMatchType>
+}
+
+const validateMatchUpdate = (
+  match: TournamentMatch,
+  updates: UpdateMatchType
+): MatchValidationResult => {
+  const fieldsToUpdate = getChangedFields(match, updates)
+
+  if (Object.keys(fieldsToUpdate).length === 0) {
+    return {
+      fieldsToUpdate,
+      error: respondWithError('No tournament updates detected', 400)
+    }
+  }
+
+  if (match.status === 'scheduled' && (fieldsToUpdate.awayScore !== undefined || fieldsToUpdate.homeScore !== undefined)) {
+    return {
+      fieldsToUpdate,
+      error: respondWithError('Game has not started yet', 400)
+    }
+  }
+
+  if (fieldsToUpdate.status === 'completed' && (match.homeScore === null || match.awayScore === null)) {
+    return {
+      fieldsToUpdate,
+      error: respondWithError('No goals set', 400)
+    }
+  }
+
+  return { fieldsToUpdate }
+}
+
+const updateMatchInDatabase = async (params: MatchUpdateParams): Promise<NextResponse | null> => {
+  try {
+    await database
+      .update(matches)
+      .set(params.fieldsToUpdate)
+      .where(eq(matches.id, params.matchId))
+    
+    return null
+  } catch (error) {
+    console.error('Error updating match:', error)
+    return respondWithError('Failed to update match', 500)
+  }
+}
+
 export async function patchMatchHandler(
   request: NextRequest,
   context?: APIContext
@@ -38,39 +94,26 @@ export async function patchMatchHandler(
     return respondWithError('Invalid match updates provided', 400)
   }
 
-  const fieldsToUpdate = getChangedFields(match!, updates)
+  const { fieldsToUpdate, error: validationError } = validateMatchUpdate(match!, updates)
+  if (validationError) return validationError
 
-  if (Object.keys(fieldsToUpdate).length === 0) {
-    return respondWithError('No tournament updates detected', 400)
-  }
-
-  if(match?.status === 'scheduled' && (fieldsToUpdate.awayScore || fieldsToUpdate.homeScore)) {
-    return respondWithError('Game has not started yet', 400)
-  }
-
-  if(fieldsToUpdate.status === 'completed' && (match?.homeScore === null || match?.awayScore === null)) {
-    return respondWithError('No goals set', 400)
-  }
-
-  try {
-    await database
-      .update(matches)
-      .set(fieldsToUpdate)
-      .where(eq(matches.id, matchId))
-  } catch (error) {
-    console.error('Error updating tournament:', error)
-    return respondWithError('Failed to update tournament', 500)
-  }
+  const updateError = await updateMatchInDatabase({
+    matchId,
+    updates,
+    match: match!,
+    fieldsToUpdate
+  })
+  if (updateError) return updateError
 
   return respondWithSuccess({
-    message: 'Tournament updated successfully',
+    message: 'Match updated successfully',
     updatedFields: fieldsToUpdate
   })
 }
 
-function getChangedFields(
-  matches: TournamentMatch,
+const getChangedFields = (
+  match: TournamentMatch,
   updates: UpdateMatchType
-): Partial<UpdateMatchType> {
-  return updatedDiff(matches, updates) as Partial<UpdateMatchType>
+): Partial<UpdateMatchType> => {
+  return updatedDiff(match, updates) as Partial<UpdateMatchType>
 }

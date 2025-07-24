@@ -2,79 +2,87 @@ import { Tournament, TournamentMatch } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import EditableMatchCard from '@/components/feature/tournament-match/editable-match-card'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
 type TournamentPhase = 'all' | 'group' | 'semifinal' | 'final'
+
+interface CompletedGroupMatchesProps {
+  group: string
+  loggedIn?: boolean
+  matches: TournamentMatch[]
+  tournament: Tournament
+}
+
+interface PhaseStats {
+  all: number
+  group: number
+  semifinal: number
+  final: number
+}
+
+interface MatchesByRound {
+  [roundNumber: number]: TournamentMatch[]
+}
+
+const getMatchPhase = (match: TournamentMatch): TournamentPhase => {
+  switch (match.phase) {
+    case 'group': return 'group'
+    case 'semifinal': return 'semifinal'
+    case 'final': return 'final'
+    default: return 'group'
+  }
+}
+
+const phaseLabels: Record<TournamentPhase, string> = {
+  all: 'Alle',
+  group: 'Gruppenphase',
+  semifinal: 'Halbfinale',
+  final: 'Finale'
+}
 
 const CompletedGroupMatches = ({
   group,
   matches,
   tournament,
   loggedIn = false
-}: {
-  group: string
-  loggedIn?: boolean
-  matches: TournamentMatch[]
-  tournament: Tournament
-}) => {
+}: CompletedGroupMatchesProps) => {
   const [selectedPhase, setSelectedPhase] = useState<TournamentPhase>('all')
 
-  // Funktion um die Turnierphase eines Matches zu bestimmen
-  const getMatchPhase = (match: TournamentMatch): TournamentPhase => {
-    // Basierend auf tournamentGroup oder anderen Kriterien
-    if (match.phase === 'group') {
-      return 'group'
-    }
-
-    // Könnte basierend auf Rundennummer oder speziellem Flag bestimmt werden
-    if (match.phase === 'semifinal') {
-      return 'semifinal'
-    }
-
-    if (match.phase === 'final') {
-      return 'final'
-    }
-
-    return 'group' // Default zu Gruppenphase
-  }
-
-  // Filtere Matches basierend auf ausgewählter Phase
-  const filteredMatches =
-    selectedPhase === 'all'
+  const { filteredMatches, matchesByRound, sortedRounds, phaseStats } = useMemo(() => {
+    const filtered = selectedPhase === 'all'
       ? matches
       : matches.filter((match) => getMatchPhase(match) === selectedPhase)
 
-  // Gruppiere gefilterte Matches nach Runden
-  const matchesByRound = filteredMatches.reduce(
-    (acc, match) => {
-      const roundNum = match.roundNumber
-      if (!acc[roundNum]) {
-        acc[roundNum] = []
-      }
-      acc[roundNum].push(match)
-      return acc
-    },
-    {} as Record<number, TournamentMatch[]>
-  )
+    const byRound = filtered.reduce<MatchesByRound>(
+      (acc, match) => {
+        const roundNum = match.roundNumber ?? 0
+        if (!acc[roundNum]) {
+          acc[roundNum] = []
+        }
+        acc[roundNum].push(match)
+        return acc
+      },
+      {}
+    )
 
-  const sortedRounds = Object.keys(matchesByRound)
-    .map(Number)
-    .sort((a, b) => b - a)
+    const sorted = Object.keys(byRound)
+      .map(Number)
+      .sort((a, b) => b - a)
 
-  // Berechne Anzahl Matches pro Phase für Badges
-  const phaseStats = {
-    all: matches.length,
-    group: matches.filter((m) => getMatchPhase(m) === 'group').length,
-    semifinal: matches.filter((m) => getMatchPhase(m) === 'semifinal').length,
-    final: matches.filter((m) => getMatchPhase(m) === 'final').length
-  }
+    const stats: PhaseStats = {
+      all: matches.length,
+      group: matches.filter((m) => getMatchPhase(m) === 'group').length,
+      semifinal: matches.filter((m) => getMatchPhase(m) === 'semifinal').length,
+      final: matches.filter((m) => getMatchPhase(m) === 'final').length
+    }
 
-  const phaseLabels = {
-    all: 'Alle',
-    group: 'Gruppenphase',
-    semifinal: 'Halbfinale',
-    final: 'Finale'
-  }
+    return {
+      filteredMatches: filtered,
+      matchesByRound: byRound,
+      sortedRounds: sorted,
+      phaseStats: stats
+    }
+  }, [matches, selectedPhase])
 
   return (
     <div className="space-y-6">
@@ -87,28 +95,32 @@ const CompletedGroupMatches = ({
           </Badge>
         </div>
 
-        {/* Phase Filter Buttons */}
         <div className="flex flex-wrap gap-2">
-          {(Object.keys(phaseLabels) as TournamentPhase[]).map((phase) => (
-            <Button
-              key={phase}
-              variant={selectedPhase === phase ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedPhase(phase)}
-              className="h-8"
-              disabled={phaseStats[phase] === 0}
-            >
-              {phaseLabels[phase]}
-              {phaseStats[phase] > 0 && (
-                <Badge
-                  variant={selectedPhase === phase ? 'secondary' : 'outline'}
-                  className="ml-2 h-4 text-xs"
-                >
-                  {phaseStats[phase]}
-                </Badge>
-              )}
-            </Button>
-          ))}
+          {(Object.keys(phaseLabels) as TournamentPhase[]).map((phase) => {
+            const isActive = selectedPhase === phase
+            const count = phaseStats[phase]
+            
+            return (
+              <Button
+                key={phase}
+                variant={isActive ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedPhase(phase)}
+                className="h-8"
+                disabled={count === 0}
+              >
+                {phaseLabels[phase]}
+                {count > 0 && (
+                  <Badge
+                    variant={isActive ? 'secondary' : 'outline'}
+                    className="ml-2 h-4 text-xs"
+                  >
+                    {count}
+                  </Badge>
+                )}
+              </Button>
+            )
+          })}
         </div>
       </div>
 

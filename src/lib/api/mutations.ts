@@ -84,6 +84,17 @@ export const createTournamentMatches = async (
   })
 }
 
+export const createTournamentPlayOffMatches = async (
+  tournamentId: string,
+  phase: string,
+): Promise<void> => {
+  await fetchJson(`/api/matches/playoff/${tournamentId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phase: phase })
+  })
+}
+
 export const deleteTournamentMatches = async (tournamentId: string): Promise<void> => {
   await fetchJson(`/api/matches/${tournamentId}`, {
     method: 'DELETE',
