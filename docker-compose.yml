@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     ports:
       - "5432:${PG_PORT}"
+    env_file:
+      - .env
     environment:
       - POSTGRES_PASSWORD=${PG_PASSWORD}
       - POSTGRES_USER=${PG_USER}
@@ -30,7 +32,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - tournament-network
 
@@ -38,6 +41,8 @@ services:
     image: adminer:latest
     container_name: tournament-adminer
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       - database
     networks:
