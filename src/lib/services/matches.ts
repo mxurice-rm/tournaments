@@ -1,7 +1,8 @@
-import { MatchPlan, Tournament } from '@/types'
+import { MatchPlan, Tournament, TournamentMatch } from '@/types'
 import { database } from '@/database'
 import { matches } from '@/database/schema'
 import { createTableMatchPlan, createBracketMatchPlan } from './match-generators'
+import { generatePlayoffMatches } from '@/lib/services/match-generators/finals'
 
 export const createMatchPlan = (
   tournament: Tournament,
@@ -26,6 +27,35 @@ const storeMatchPlan = async (matchPlan: MatchPlan) => {
       success: false,
       error: new Error('Failed to save matches to the database')
     }
+  }
+}
+
+export async function generateAndStorePlayoffMatches(
+  tournament: Tournament,
+  existingMatches: TournamentMatch[],
+  phase: 'semifinal' | 'final'
+) {
+  const result = await generatePlayoffMatches(tournament, existingMatches, phase)
+
+  if (!result.success) {
+    return {
+      success: false,
+      error: result.error
+    }
+  }
+
+  const storeResult = await storeMatchPlan(result.matchPlan!)
+  if (!storeResult.success) {
+    return {
+      success: false,
+      error: storeResult.error
+    }
+  }
+
+  return {
+    success: true,
+    matchPlan: result.matchPlan,
+    savedMatches: storeResult.savedMatches
   }
 }
 

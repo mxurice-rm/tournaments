@@ -16,6 +16,7 @@ export type TournamentTeam = {
   goals: number | null
   goalsAgainst: number | null
   points: number | null
+  tournamentGroup: string | null
 }
 
 export type Tournament = {

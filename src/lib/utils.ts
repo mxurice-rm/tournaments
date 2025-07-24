@@ -4,6 +4,9 @@ import { z, ZodTypeAny } from 'zod'
 import { ActionState, Field, NormalizedFieldGroup } from '@/types'
 import { NextResponse } from 'next/server'
 import { USERNAME_ERROR_CODES } from 'better-auth/plugins/username'
+import { toast } from 'react-toastify'
+import ErrorToast from '@/components/common/toasts/error-toast'
+import SuccessToast from '@/components/common/toasts/success-toast'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -89,4 +92,40 @@ export function hydrateFromRows<RowType, EntityType>(
     upsertFn({ map, row })
   }
   return Array.from(map.values())
+}
+
+export const errorToast = () => {
+  toast.error(ErrorToast, {
+    toastId: 'error-toast',
+    data: {
+      title: 'Oops...',
+      description: 'Es ist ein unbekannter Fehler aufgetreten.'
+    },
+    position: 'bottom-right',
+    autoClose: 2000,
+    style: {
+      width: '450px',
+      backgroundColor: 'var(--background)'
+    },
+    closeOnClick: true,
+    pauseOnHover: false
+  })
+}
+
+export const successToast = (message: string) => {
+  toast.success(SuccessToast, {
+    toastId: 'success-toast',
+    data: {
+      title: 'Erfolgreich',
+      description: message
+    },
+    position: 'bottom-right',
+    autoClose: 2000,
+    style: {
+      width: '450px',
+      backgroundColor: 'var(--background)'
+    },
+    closeOnClick: true,
+    pauseOnHover: false
+  })
 }

@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from '@/app/Providers'
 import React from 'react'
 import ToggleTheme from '@/components/common/toggle-theme'
+import { ToastContainer } from 'react-toastify'
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -29,6 +30,7 @@ export default function RootLayout({
           </div>
 
           {children}
+          <ToastContainer />
         </Providers>
       </body>
     </html>

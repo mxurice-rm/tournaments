@@ -74,3 +74,19 @@ export const updateTournamentMatch = async (
     body: JSON.stringify(values)
   })
 }
+
+export const createTournamentMatches = async (
+  tournamentId: string,
+): Promise<void> => {
+  await fetchJson(`/api/matches/${tournamentId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+export const deleteTournamentMatches = async (tournamentId: string): Promise<void> => {
+  await fetchJson(`/api/matches/${tournamentId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
