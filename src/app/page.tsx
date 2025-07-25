@@ -32,7 +32,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-red-600/5 rounded-full blur-3xl"></div>
 
       {/* PAGE CONTAINER */}
       <div className="max-w-7xl container mx-auto flex-grow flex flex-col">

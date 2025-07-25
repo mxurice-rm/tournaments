@@ -13,7 +13,7 @@ const InfoCard = ({
   return (
     <Card className="!p-4 !gap-3">
       <div className="flex items-center">
-        <div className="pl-0 p-2 rounded-md bg-secondary/50">
+        <div className="pl-0 p-2 rounded-md ">
           {React.isValidElement(icon) &&
             React.cloneElement(icon, {
               className: 'h-5 w-5 text-primary'

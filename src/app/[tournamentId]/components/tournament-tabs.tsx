@@ -32,11 +32,11 @@ export const TournamentTabs = ({
       >
         <TabsTrigger
           value="current"
-          className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+          className="flex flex-col md:flex-row items-center gap-1 md:gap-2 py-2 px-1 sm:px-2 text-xs md:text-sm"
         >
-          <Trophy className="h-3 w-3 sm:h-4 sm:w-4" />
-          <span className="hidden sm:inline">Aktuelle Spiele</span>
-          <span className="sm:hidden">Aktuell</span>
+          <Trophy className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="hidden md:inline">Aktuelle Spiele</span>
+          <span className="md:hidden">Aktuell</span>
           {currentRoundMatches.length > 0 && (
             <Badge variant="secondary" className="h-4 text-xs min-w-0 px-1">
               {currentRoundMatches.length}
@@ -47,11 +47,11 @@ export const TournamentTabs = ({
         {!phaseStatus.groupPhaseCompleted && (
           <TabsTrigger
             value="upcoming"
-            className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+            className="flex flex-col md:flex-row items-center gap-1 md:gap-2 py-2 px-1 sm:px-2 text-xs md:text-sm"
           >
-            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Kommende Spiele</span>
-            <span className="sm:hidden">Kommend</span>
+            <Calendar className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Kommende Spiele</span>
+            <span className="md:hidden">Kommend</span>
             {upcomingRounds.length > 0 && (
               <Badge variant="secondary" className="h-4 text-xs min-w-0 px-1">
                 {upcomingRounds.reduce(
@@ -65,11 +65,11 @@ export const TournamentTabs = ({
 
         <TabsTrigger
           value="completed"
-          className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+          className="flex flex-col md:flex-row items-center gap-1 md:gap-2 py-2 px-1 sm:px-2 text-xs md:text-sm"
         >
-          <History className="h-3 w-3 sm:h-4 sm:w-4" />
-          <span className="hidden sm:inline">Gespielte Spiele</span>
-          <span className="sm:hidden">Gespielt</span>
+          <History className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="hidden md:inline">Gespielte Spiele</span>
+          <span className="md:hidden">Gespielt</span>
           {completedMatches.length > 0 && (
             <Badge variant="secondary" className="h-4 text-xs min-w-0 px-1">
               {completedMatches.length}
@@ -79,11 +79,11 @@ export const TournamentTabs = ({
 
         <TabsTrigger
           value="table"
-          className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+          className="flex flex-col md:flex-row items-center gap-1 md:gap-2 py-2 px-1 sm:px-2 text-xs md:text-sm"
         >
-          <Table className="h-3 w-3 sm:h-4 sm:w-4" />
-          <span className="hidden sm:inline">Tabelle</span>
-          <span className="sm:hidden">Tabelle</span>
+          <Table className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="hidden md:inline">Tabelle</span>
+          <span className="md:hidden">Tabelle</span>
         </TabsTrigger>
       </TabsList>
 
