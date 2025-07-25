@@ -1,26 +1,4 @@
 services:
-  database:
-    image: postgres:latest
-    container_name: tournament-db
-    restart: unless-stopped
-    ports:
-      - "5432:${PG_PORT}"
-    env_file:
-      - .env
-    environment:
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_DB=${PG_DATABASE}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${PG_USER}" ]
-      interval: 1s
-      timeout: 5s
-      retries: 10
-    volumes:
-      - databaseData:/var/lib/postgresql/data
-    networks:
-      - tournament-network
-
   nextjs:
     container_name: tournament-next
     restart: unless-stopped
@@ -34,6 +12,28 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    networks:
+      - tournament-network
+
+  database:
+    image: postgres:latest
+    container_name: tournament-db
+    restart: unless-stopped
+    ports:
+      - "5432:${PG_PORT}"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_DB=${PG_DATABASE}
+    volumes:
+      - databaseData:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${PG_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - tournament-network
 
