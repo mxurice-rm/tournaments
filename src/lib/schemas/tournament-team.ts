@@ -6,7 +6,7 @@ export const TournamentTeamSchema = z.object({
     .min(1, 'Es muss ein Teamname angegeben werden.')
     .max(50, 'Teamname darf maximal 50 Zeichen lang sein.')
     .regex(
-      /^[a-zA-Z0-9\s]+$/,
+      /^[a-zA-ZäöüÄÖÜß0-9\s]+$/,
       'Teamname darf nur Buchstaben, Zahlen und Leerzeichen enthalten.'
     ),
 
