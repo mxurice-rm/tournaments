@@ -44,7 +44,9 @@ export const upsertTournament = ({
 
     if (row.teamMembers) {
       const team = tournament.teams.find((team) => team.id === row.teams!.id)!
-      team.members.push(row.teamMembers)
+      if (!team.members.some(member => member.id === row.teamMembers!.id)) {
+        team.members.push(row.teamMembers)
+      }
     }
   }
 

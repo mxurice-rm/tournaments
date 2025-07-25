@@ -22,7 +22,7 @@ export const upsertTeamWithMembers = ({
 
   const team = tournamentTeamMap.get(teamId)!
 
-  if (row.teamMembers) {
+  if (row.teamMembers && !team.members.some(member => member.id === row.teamMembers!.id)) {
     team.members.push(row.teamMembers)
   }
 }
